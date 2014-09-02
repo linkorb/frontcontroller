@@ -1,7 +1,7 @@
 {
     "name": "frontcontroller/frontcontroller",
     "description": "Frontcontroller framework",
-    "homepage": "http://www.github.com/linkorb/frontcontroller",
+    "homepage": "http://www.github.com/frontcontroller/frontcontroller",
     "keywords": ["frontcontroller", "cdn", "cms", "website", "reverseproxy", "proxy"],
     "type": "library",
     "authors": [
@@ -34,5 +34,6 @@
         "psr-4": {
             "FrontController\\": "src/"
         }
-    }
+    },
+    "license": "MIT"
 }
