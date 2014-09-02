@@ -2,7 +2,7 @@
     "name": "frontcontroller/frontcontroller",
     "description": "Frontcontroller framework",
     "homepage": "http://www.github.com/linkorb/frontcontroller",
-    "keywords": ["frontcontroller", "cdn", "cms", "website"],
+    "keywords": ["frontcontroller", "cdn", "cms", "website", "reverseproxy", "proxy"],
     "type": "library",
     "authors": [
         {
