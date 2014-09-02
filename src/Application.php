@@ -5,6 +5,9 @@ namespace FrontController;
 use Silex\Application as SilexApplication;
 use Symfony\Component\HttpFoundation\Request;
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Routing\Loader\YamlFileLoader;
+
 class Application extends SilexApplication
 {
     public function __construct(array $values = array())
@@ -12,6 +15,7 @@ class Application extends SilexApplication
         parent::__construct($values);
 
         $this->configureParameters();
+        $this->configureRoutes();
         $this->configureProviders();
         $this->configureServices();
         $this->configureSecurity();
@@ -21,8 +25,13 @@ class Application extends SilexApplication
     private function configureParameters()
     {
         $this['debug'] = true;
-
-        $this['apiregistry.baseurl'] = 'http://localhost:9321/';
+    }
+    
+    private function configureRoutes()
+    {
+        $locator = new FileLocator(array($this['frontcontroller.basepath']));
+        $loader = new YamlFileLoader($locator);
+        $this['routes'] = $loader->load('routes.yml');
     }
     
     private function configureProviders()
@@ -43,7 +52,7 @@ class Application extends SilexApplication
         $loader = null; // TODO
         $twig = new \Twig_Environment($loader, $options);
                 
-        $this['twig.loader.filesystem']->addPath(__DIR__ . '/../example/website/views', 'Website');
+        $this['twig.loader.filesystem']->addPath(__DIR__ . '/../example/templates', 'Website');
         //$this['twig.loader.filesystem']->addPath(__DIR__ . '/../app/Resources/views', 'App');
 
         // *** Setup Sessions ***

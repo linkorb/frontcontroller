@@ -1,18 +1,20 @@
 <?php
 
 use FrontController\Application;
-use Symfony\Component\HttpFoundation\Request;
 
 /** show all errors! */
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-$app = new Application();
+$basepath = __DIR__ . '/../example';
 
-// General
-$app->get(
-    '/',
-    'FrontController\Module\Website\WebsiteController::staticPageAction'
-)->value("template", "@Website/frontpage.html.twig");
+
+$app = new Application(
+    array (
+        'frontcontroller.basepath' => $basepath
+    )
+);
+$controllerresolver = new \FrontController\ControllerResolver($app, null);
+$app['resolver'] = $controllerresolver;
 
 return $app;
