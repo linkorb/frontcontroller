@@ -23,6 +23,14 @@ It's easy to add new modules that can handle new types of requests
 ## Starting server in development mode
 
     cd web
-    php -t web -S 0.0.0.0:54321 web/routing.php
+    export FRONTCONTROLLER_BASEPATH=/my/frontcontroller/website/
+    php -d variables_order=EGPCS -t web -S 0.0.0.0:54321 web/index.php
 
-now open localhost:54321 in your browser
+Now open localhost:54321 in your browser.
+    
+# Troubleshooting
+
+## No images / scripts / assets using PHP built-in server
+
+You need to explicitly add `web/index.php` to your startup command,
+otherwise the built-in server won't support files with `.` characters in them.
