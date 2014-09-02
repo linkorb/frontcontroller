@@ -1,0 +1,21 @@
+frontpage:
+    path: /
+    defaults:  { _controller: TwigTemplate, template: @Website\frontpage.html.twig }
+
+about:
+    path: /about
+    defaults:  { _controller: TwigTemplate, template: @Website\about.html.twig }
+
+assets:
+    path: /assets/{postfix}
+    defaults:  { _controller: StaticFile, basedir: assets/ }
+    requirements:
+        postfix: .*
+
+test_redirect_301:
+    path: /test/redirect/301
+    defaults:  { _controller: Redirect, target: http://www.google.com, httpcode: 301 }
+
+test_redirect_302:
+    path: /test/redirect/302
+    defaults:  { _controller: Redirect, target: http://www.google.com, httpcode: 302 }
