@@ -52,7 +52,7 @@ class Application extends SilexApplication
         $loader = null; // TODO
         $twig = new \Twig_Environment($loader, $options);
                 
-        $this['twig.loader.filesystem']->addPath(__DIR__ . '/../example/templates', 'Website');
+        $this['twig.loader.filesystem']->addPath($this['frontcontroller.basepath'] . '/templates', 'Website');
         //$this['twig.loader.filesystem']->addPath(__DIR__ . '/../app/Resources/views', 'App');
 
         // *** Setup Sessions ***
