@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
+use Symfony\Component\Yaml\Parser as YamlParser;
+
+use RuntimeException;
+use FrontController\Datasource\RestDatasource;
 
 class Application extends SilexApplication
 {
@@ -15,6 +19,7 @@ class Application extends SilexApplication
         parent::__construct($values);
 
         $this->configureParameters();
+        $this->configureApplication();
         $this->configureRoutes();
         $this->configureProviders();
         $this->configureServices();
@@ -26,6 +31,25 @@ class Application extends SilexApplication
     {
         $this['debug'] = true;
     }
+    
+    private function configureApplication()
+    {
+        $parser = new YamlParser();
+        $config = $parser->parse(file_get_contents($this['frontcontroller.basepath'] . '/frontcontroller.yml'));
+        //print_r($config);
+        
+        foreach ($config['datasources'] as $dskey => $dsconfig) {
+            switch ($dsconfig['type']) {
+                case "rest":
+                    $datasource = new RestDatasource($dsconfig);
+                    $this['frontcontroller.datasource.' . $dskey] = $datasource;
+                    break;
+                default:
+                    throw new RuntimeException("Unsupported datasource type: " . $dsconfig['type']);
+            }
+        }
+    }
+    
     
     private function configureRoutes()
     {
