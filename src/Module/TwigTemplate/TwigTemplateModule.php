@@ -14,8 +14,11 @@ class TwigTemplateModule implements ModuleInterface
         
         foreach ($data as $datakey => $datavalue) {
             $ds = $app['frontcontroller.datasource.' . $datavalue['datasource']];
-            $templatedata[$datakey] = $ds->getData(array('path' => $datavalue['path']));
+            $path = $datavalue['path'];
+            $path = str_replace('{blogidentifier}', $request->attributes->get('blogidentifier'), $path);
+            $templatedata[$datakey] = $ds->getData(array('path' => $path));
         }
+        //print_r($templatedata); exit();
 
         $html = $app['twig']->render($template, $templatedata);
 
