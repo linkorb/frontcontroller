@@ -9,8 +9,6 @@ error_reporting(E_ALL);
 $basepath = getenv('FRONTCONTROLLER_BASEPATH');
 if ($basepath == '') {
     throw new RuntimeException('Please provide the enviroment variable `FRONTCONTROLLER_BASEPATH`');
-    // Load default example
-    $basepath = __DIR__ . '/../example';
 }
 
 $app = new Application(
