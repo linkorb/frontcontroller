@@ -17,7 +17,9 @@ class RestDatasource implements DatasourceInterface
     {
         $path = $parameters['path'];
         $url = $this->baseurl . $path;
-        $res = $this->client->get($url, array());
+        $res = $this->client->get($url, array(
+            'auth' =>  [$this->username, $this->password]
+        ));
         
         return json_decode($res->getBody(), true);
     }
