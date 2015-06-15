@@ -44,8 +44,6 @@ class ApacheConfGeneratorCommand extends Command
         }
 
         $this->getHosts();
-        // $content = $this->getConfigContent();
-        // $targetPath = $this->getTargetPath();
 
         if (false === file_put_contents($this->getTargetPath(), $this->getConfigContent())) {
             $output->writeln('<error>No permission to write config, run with sudo maybe.</error>');
