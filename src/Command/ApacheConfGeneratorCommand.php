@@ -22,35 +22,60 @@ class ApacheConfGeneratorCommand extends Command
             ->setName('frontcontroller:apacheconf')
             ->setDescription('Generate Apache configurations')
             ->addArgument(
-                'webroot',
-                InputArgument::REQUIRED,
-                'The webroot. e.g. /var/www'
-            )
-            ->addArgument(
                 'path',
                 InputArgument::REQUIRED,
                 'Path to the websites root directory.'
+            )->addArgument(
+                'webroot',
+                InputArgument::OPTIONAL,
+                'The webroot. e.g. /var/www'
             )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->basePath = $input->getArgument('path');
-        $this->webRoot = $input->getArgument('webroot');
+        $this->setBasePath($input->getArgument('path'));
+        $this->setWebRoot($input->getArgument('webroot'));
 
         if (!is_dir($this->basePath)) {
-            throw new InvalidArgumentException('Invalid path or path is not directory');
+            $output->writeln('<error>Invalid path or path is not directory'.$this->basePath.'</error>');
+            return;
         }
 
         $this->getHosts();
+        if (count($this->hosts) == 0) {
+            $output->writeln('<error>No host configuration found. Please put "host: www.example.com" in your frontcontroller.yml</error>');
+            return;
+        }
 
         if (false === file_put_contents($this->getTargetPath(), $this->getConfigContent())) {
             $output->writeln('<error>No permission to write config, run with sudo maybe.</error>');
             return;
         }
 
+        $output->writeln($this->reloadApache());
+
         $output->writeln('<info>Done! Please include '.$this->getTargetPath().' in your apache conf.</info>');
+    }
+
+    private function setBasePath($path)
+    {
+        if (substr($path, -1) !== '/') {
+            $path .= '/';
+        }
+        $this->basePath = $path;
+    }
+
+    private function setWebRoot($webroot)
+    {
+        $realPath = __DIR__.'/../../web';
+        $this->webRoot = $webroot;
+        if ($this->webRoot) {
+            symlink($realPath, $webroot);
+        } else {
+            $this->webRoot = $realPath;
+        }
     }
 
     private function getHosts()
@@ -101,5 +126,19 @@ class ApacheConfGeneratorCommand extends Command
         }
 
         return $o;
+    }
+
+    private function reloadApache()
+    {
+        switch (php_uname('s')) {
+            case 'Darwin':
+                $o = 'apachectl restart';
+                break;
+            default:
+                $o = '/etc/init.d/apache2 reload';
+                break;
+        }
+
+        return exec($o);
     }
 }

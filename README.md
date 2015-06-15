@@ -39,9 +39,11 @@ otherwise the built-in server won't support files with `.` characters in them.
 It is possible to generate Apache config files by using the command line tool.
 The tool supports Apache config file generation for OSX and Debian/Ubuntu.
 ```
-sudo app/console frontcontroller:apacheconf [path_to_web_root] [path_to_website_root_dir]
+sudo app/console frontcontroller:apacheconf [path_to_website_root_dir] [path_to_web_root]
 ```
 Note:
+* The [path_to_web_root] is optional. If not specified, it uses the ```web``` directory of this repo.
+If specified, [path_to_web_root] is a symlink to the ```web``` directory.
 * In the websites' frontcontroller.yml file, it's needed to add ```host: example.com``` to make it work.
 * On OSX, you need to manually include the new config file in ```/etc/apache2/httpd.conf
 * On Debian/Ubuntu, you need to symlink the new config file in /etc/apache2/sites-enabled/
