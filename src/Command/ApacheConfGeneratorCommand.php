@@ -80,13 +80,23 @@ class ApacheConfGeneratorCommand extends Command
 
     private function getHosts()
     {
+        $parser = new YamlParser();
         $files = glob($this->basePath.'*');
         foreach ($files as $file) {
             if (is_dir($file)) {
-                $parser = new YamlParser();
-                $config = $parser->parse(file_get_contents($file.'/frontcontroller.yml'));
-                if (isset($config['host'])) {
-                    $this->hosts []= array('path' => $file, 'host' => $config['host']);
+                if (file_exists($file.'/hosts.yml')) {
+                    $config = $parser->parse(file_get_contents($file.'/hosts.yml'));
+                    if (isset($config['host'])) {
+                        $host = array('path' => $file, 'alias' => array());
+                        foreach ($config['host'] as $h) {
+                            if (!isset($host['host'])) {
+                                $host['host'] = $h;
+                            } else {
+                                $host['alias'] []= $h;
+                            }
+                        }
+                        $this->hosts []= $host;
+                    }
                 }
             }
         }
@@ -101,7 +111,7 @@ class ApacheConfGeneratorCommand extends Command
         foreach ($this->hosts as $host) {
             $o .= $lb.'<VirtualHost *:80>
     DocumentRoot "'.$this->webRoot.'"
-    ServerName '.$host['host'].'
+    ServerName '.$host['host'].$this->insertAlias($host).'
     SetEnv FRONTCONTROLLER_BASEPATH "'.$host['path'].'"
     <Directory '.$this->webRoot.'>
         Options Indexes FollowSymLinks MultiViews
@@ -109,6 +119,21 @@ class ApacheConfGeneratorCommand extends Command
         Require all granted
     </Directory>
 </VirtualHost>';
+        }
+
+        return $o;
+    }
+
+    private function insertAlias($host)
+    {
+        $o = '';
+        if (count($host['alias']) > 0) {
+            $o .= '
+    ServerAlias ';
+            foreach ($host['alias'] as $a) {
+                $o .= $a.' ';
+            }
+            $o = rtrim($o);
         }
 
         return $o;
