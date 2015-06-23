@@ -54,6 +54,8 @@ class ApacheConfGeneratorCommand extends Command
             return;
         }
 
+        $this->hackHosts($output);
+
         $output->writeln($this->reloadApache());
 
         $output->writeln('<info>Done! Please include '.$this->getTargetPath().' in your apache conf.</info>');
@@ -72,7 +74,9 @@ class ApacheConfGeneratorCommand extends Command
         $realPath = __DIR__.'/../../web';
         $this->webRoot = $webroot;
         if ($this->webRoot) {
-            symlink($realPath, $webroot);
+            if (!file_exists($webroot)) {
+                symlink($realPath, $webroot);
+            }
         } else {
             $this->webRoot = $realPath;
         }
@@ -165,5 +169,37 @@ class ApacheConfGeneratorCommand extends Command
         }
 
         return exec($o);
+    }
+
+    private function hackHosts(OutputInterface $output)
+    {
+        $hosts = [];
+        foreach ($this->hosts as $host) {
+            $hosts []= $host['host'];
+            foreach ((array) $host['alias'] as $alias) {
+                $hosts []= $alias;
+            }
+        }
+
+        if (!$hosts) {
+            return false;
+        }
+
+        $path = '/etc/hosts';
+        $o = '';
+        $file = file_get_contents($path);
+        foreach ($hosts as $host) {
+            if (stripos($file, "\t".$host) === false) {
+                $o .= "\n127.0.0.1\t$host";
+            }
+        }
+
+        if ($o) {
+            file_put_contents($path, $o, FILE_APPEND);
+            $output->writeln('<info>Hosts file hacked: '.$o.'</info>');
+            return true;
+        }
+
+        return false;
     }
 }
