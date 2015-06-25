@@ -5,6 +5,7 @@ namespace FrontController\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Parser as YamlParser;
@@ -30,6 +31,12 @@ class ApacheConfGeneratorCommand extends Command
                 InputArgument::OPTIONAL,
                 'The webroot. e.g. /var/www'
             )
+            ->addOption(
+                'hackhosts',
+                null,
+                InputOption::VALUE_NONE,
+                'Use this option to hack the local hosts file so that the hosts in hosts.yml becomes localhost'
+            )
         ;
     }
 
@@ -37,6 +44,7 @@ class ApacheConfGeneratorCommand extends Command
     {
         $this->setBasePath($input->getArgument('path'));
         $this->setWebRoot($input->getArgument('webroot'));
+        $hackhosts = $input->getOption('hackhosts');
 
         if (!is_dir($this->basePath)) {
             $output->writeln('<error>Invalid path or path is not directory'.$this->basePath.'</error>');
@@ -45,7 +53,10 @@ class ApacheConfGeneratorCommand extends Command
 
         $this->getHosts();
         if (count($this->hosts) == 0) {
-            $output->writeln('<error>No host configuration found. Please put "host: www.example.com" in your frontcontroller.yml</error>');
+            $output->writeln(
+                '<error>No host configuration found.
+                Please put "host: www.example.com" in your frontcontroller.yml</error>'
+            );
             return;
         }
 
@@ -54,7 +65,9 @@ class ApacheConfGeneratorCommand extends Command
             return;
         }
 
-        $this->hackHosts($output);
+        if ($hackhosts) {
+            $this->hackHosts($output);
+        }
 
         $output->writeln($this->reloadApache());
 
