@@ -104,7 +104,7 @@ class ApacheConfGeneratorCommand extends Command
                 if (file_exists($file.'/hosts.yml')) {
                     $config = $parser->parse(file_get_contents($file.'/hosts.yml'));
                     if (isset($config['host'])) {
-                        $host = array('path' => $file, 'alias' => array());
+                        $host = array('path' => realpath($file), 'alias' => array());
                         foreach ($config['host'] as $h) {
                             if (!isset($host['host'])) {
                                 $host['host'] = $h;
