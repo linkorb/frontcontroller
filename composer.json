@@ -12,21 +12,22 @@
         }
     ],
     "require": {
-        "symfony/console": "2.4.*@dev",
-        "silex/silex": "2.0.*@dev",
-        "twig/twig": "1.16.*@dev",
+        "symfony/console": "2.7.*",
+        "silex/silex": "2.0.x-dev#a3881a5a2fc7e0233307c8240d4adc909a559b49",
+        "twig/twig": ">=1.8,<2.0-dev",
 
-        "symfony/form": "2.5.2",
-        "symfony/validator": "2.5.2",
-        "symfony/config": "~2.4",
-        "symfony/translation": "~2.4",
-        "symfony/security-csrf": "~2.4",
+        "symfony/form": "2.7.*",
+        "symfony/validator": "2.7.*",
+        "symfony/config": "2.7.*",
+        "symfony/translation": "2.7.*",
+        "symfony/security-csrf": "2.7.*",
         
-        "symfony/twig-bridge": "~2.4",
+        "symfony/twig-bridge": "2.7.*",
 
         "michelf/php-markdown": "1.4.1",
         "swiftmailer/swiftmailer": "5.2.*@dev",
-        "guzzlehttp/guzzle": "4.*"
+        "guzzlehttp/guzzle": "4.*",
+        "leafo/lessphp": "0.5.0"
     },
     "require-dev": {
         "phpunit/phpunit": "4.2.*@dev"

@@ -55,11 +55,14 @@ class Application extends SilexApplication
     {
         $locator = new FileLocator(array($this['frontcontroller.basepath']));
         $loader = new YamlFileLoader($locator);
-        $this['routes'] = $loader->load('routes.yml');
+        $this['routes']->addCollection($loader->load('routes.yml'));
     }
     
     private function configureProviders()
     {
+        // *** Setup Routing ***
+        $this->register(new \Silex\Provider\RoutingServiceProvider());
+
         // *** Setup Translation ***
         $this->register(new \Silex\Provider\LocaleServiceProvider());
         $this->register(new \Silex\Provider\ValidatorServiceProvider());
@@ -84,8 +87,6 @@ class Application extends SilexApplication
             'session.storage.save_path' => '/tmp/frontcontroller_sessions'
         ));
 
-        // *** Setup Routing ***
-        $this->register(new \Silex\Provider\RoutingServiceProvider());
 
         // *** Setup Doctrine DBAL ***
         /*
