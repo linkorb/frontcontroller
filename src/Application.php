@@ -4,11 +4,9 @@ namespace FrontController;
 
 use Silex\Application as SilexApplication;
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Yaml\Parser as YamlParser;
-
 use RuntimeException;
 use FrontController\Datasource\RestDatasource;
 
@@ -26,18 +24,22 @@ class Application extends SilexApplication
         $this->configureSecurity();
         $this->configureListeners();
     }
-    
+
     private function configureParameters()
     {
         $this['debug'] = true;
     }
-    
+
     private function configureApplication()
     {
+        $file = $this['frontcontroller.basepath'].'/frontcontroller.yml';
+        if (!file_exists($file)) {
+            return;
+        }
         $parser = new YamlParser();
-        $config = $parser->parse(file_get_contents($this['frontcontroller.basepath'] . '/frontcontroller.yml'));
+        $config = $parser->parse(file_get_contents($file));
         //print_r($config);
-        
+
         foreach ($config['datasources'] as $dskey => $dsconfig) {
             switch ($dsconfig['type']) {
                 case "rest":
@@ -49,15 +51,15 @@ class Application extends SilexApplication
             }
         }
     }
-    
-    
+
+
     private function configureRoutes()
     {
         $locator = new FileLocator(array($this['frontcontroller.basepath']));
         $loader = new YamlFileLoader($locator);
         $this['routes']->addCollection($loader->load('routes.yml'));
     }
-    
+
     private function configureProviders()
     {
         // *** Setup Routing ***
@@ -71,14 +73,14 @@ class Application extends SilexApplication
         ));
         // *** Setup Form ***
         $this->register(new \Silex\Provider\FormServiceProvider());
-        
+
         // *** Setup Twig ***
         $this->register(new \Silex\Provider\TwigServiceProvider());
-        
+
         $options = array();
         $loader = null; // TODO
         $twig = new \Twig_Environment($loader, $options);
-                
+
         $this['twig.loader.filesystem']->addPath($this['frontcontroller.basepath'] . '/templates', 'Website');
         //$this['twig.loader.filesystem']->addPath(__DIR__ . '/../app/Resources/views', 'App');
 
@@ -118,16 +120,15 @@ class Application extends SilexApplication
         ));
         */
     }
-    
+
     private function configureServices()
     {
-        
     }
-    
+
     private function configureSecurity()
     {
         // Setup Security
-        
+
         /*
         $this->register(new \Silex\Provider\SecurityServiceProvider(), array());
 
@@ -142,7 +143,7 @@ class Application extends SilexApplication
         );
         */
     }
-    
+
     private function configureListeners()
     {
         // todo

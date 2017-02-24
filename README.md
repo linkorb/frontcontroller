@@ -22,7 +22,7 @@ It's easy to add new modules that can handle new types of requests
 
 ## Starting server in development mode
 
-    cd web
+    # use `cd` to go to the frontcontroller base directory. i.e. cd ~/git/frontcontroller
     export FRONTCONTROLLER_BASEPATH=/my/frontcontroller/website/
     php -d variables_order=EGPCS -t web -S 0.0.0.0:54321 web/index.php
 
