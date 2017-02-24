@@ -21,12 +21,12 @@
         "symfony/config": "2.7.*",
         "symfony/translation": "2.7.*",
         "symfony/security-csrf": "2.7.*",
-        
+
         "symfony/twig-bridge": "2.7.*",
 
         "michelf/php-markdown": "1.4.1",
         "swiftmailer/swiftmailer": "5.2.*@dev",
-        "guzzlehttp/guzzle": "4.*",
+        "guzzlehttp/guzzle": "6.*",
         "leafo/lessphp": "0.5.0"
     },
     "require-dev": {

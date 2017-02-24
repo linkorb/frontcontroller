@@ -12,7 +12,7 @@ class RestDatasource implements DatasourceInterface
         $this->client = new \GuzzleHttp\Client();
 
     }
-    
+
     public function getData($parameters = array())
     {
         $path = $parameters['path'];
@@ -20,7 +20,7 @@ class RestDatasource implements DatasourceInterface
         $res = $this->client->get($url, array(
             'auth' =>  [$this->username, $this->password]
         ));
-        
+
         return json_decode($res->getBody(), true);
     }
 }
