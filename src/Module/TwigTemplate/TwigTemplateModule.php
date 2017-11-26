@@ -8,19 +8,58 @@ use FrontController\Core\ModuleInterface;
 
 class TwigTemplateModule implements ModuleInterface
 {
-    public function handle(Application $app, Request $request, $template = null, $data = array())
+    public function handle(Application $app, Request $request, $template = null, $data = [])
     {
-        $templatedata = array();
-        
-        foreach ($data as $datakey => $datavalue) {
-            $ds = $app['frontcontroller.datasource.' . $datavalue['datasource']];
-            $path = $datavalue['path'];
-            $path = str_replace('{blogidentifier}', $request->attributes->get('blogidentifier'), $path);
-            $templatedata[$datakey] = $ds->getData(array('path' => $path));
-        }
-        //print_r($templatedata); exit();
+        $input = array();
+        $ds = $app['frontcontroller.datasource'];
 
-        $html = $app['twig']->render($template, $templatedata);
+        foreach ($data as $name => $config) {
+            $path = $config['path'];
+
+            // Process `path` with url parameters
+            foreach ($request->attributes->all() as $key => $value) {
+                if (is_string($value)) {
+                    $path = str_replace('{' . $key . '}', $value, $path);
+                }
+            }
+            // fetch data from data-source
+            $values = $ds->getData(array('path' => $path));
+
+            // Optionally use offset in data
+            if (isset($config['offset'])) {
+                $values = $values[$config['offset']];
+            }
+
+            // Optionally re-key
+            if (isset($config['key'])) {
+                $res = [];
+                foreach ($values as $key => $value) {
+                    $newKey = $value[$config['key']];
+                    if (isset($config['value'])) {
+                        $value = $value[$config['value']];
+                    }
+                    $res[$newKey] = $value;
+                }
+                $values = $res;
+            }
+
+            if (isset($config['mode'])) {
+                switch ($config['mode']) {
+                    case 'first':
+                        $values = $values[0];
+                        break;
+                    case 'last':
+                        break;
+                    case 'all':
+                    default:
+                        break;
+                }
+            }
+            $input[$name] = $values;
+        }
+
+        // print_r($input);exit();
+        $html = $app['twig']->render($template, $input);
 
         return $html;
     }

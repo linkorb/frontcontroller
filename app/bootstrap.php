@@ -1,6 +1,7 @@
 <?php
 
 use FrontController\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 /** show all errors! */
 ini_set('display_errors', 1);
@@ -16,6 +17,16 @@ $app = new Application(
         'frontcontroller.basepath' => $basepath
     )
 );
+
+$app->before(function (Request $request, Application $app) {
+    $filter = new Twig_SimpleFilter('markdown', function ($value) use ($app) {
+        $p = new Parsedown();
+
+        return $p->text($value);
+    });
+    $app['twig']->addFilter($filter);
+});
+
 $controllerresolver = new \FrontController\ControllerResolver($app, null);
 $app['resolver'] = $controllerresolver;
 
